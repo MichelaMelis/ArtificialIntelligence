@@ -5,14 +5,15 @@ class Solver:
 
     def __init__(self,initial_state):
         self.initial_state = initial_state
-        self.goal_state = [[1,2,3],[4,5,6],[7,8,0]]
-        self.P = Node(initial_state)
-        self.F = []
-        self.Stack = []
-        self.Path = []
-        self.cost = 0
+        self.goal_state = np.array([[1,2,3],[4,5,6],[7,8,0]])
+        self.P = Node(initial_state) #parent node
+        self.F = []        #fringe for the nodes that wait to be expanded
+        self.Stack = []    #stack where all expanded nodes will be saved
+        self.Path = []     #only parents node that are in the path solution are saved
+        self.cost = 0      #cost of the solution
 
 
+    #auxiliary function to select which node to expand next in A*
     def select(self):
         min = self.F[0]
         for j in self.F:
@@ -22,6 +23,7 @@ class Solver:
         self.P = min
         return self.P
 
+    #generating new possible states
     def move(self, x ,y ):
 
         # EXPAND THE PARENT STATE P, considering all possible moves
@@ -32,6 +34,7 @@ class Solver:
             C.tiles[x, y] = self.P.tiles[x - 1, y]  # moving the tile
             C.tiles[x - 1, y] = 0  # empty space in
             C.compute_heuristics()
+            # checking if the newly generated node has a configuration that already exists
             for j in self.Stack:
                 if (j.tiles == C.tiles).all():
                     already = 1
@@ -48,6 +51,8 @@ class Solver:
             C.tiles[x, y] = self.P.tiles[x + 1, y]
             C.tiles[x + 1, y] = 0
             C.compute_heuristics()
+
+            #checking if the newly generated node has a configuration that already exists
             for j in self.Stack:
                 if (j.tiles == C.tiles).all():
                     already = 1
@@ -62,6 +67,8 @@ class Solver:
             C.tiles[x, y] = self.P.tiles[x, y + 1]
             C.tiles[x, y + 1] = 0
             C.compute_heuristics()
+
+            # checking if the newly generated node has a configuration that already exists
             for j in self.Stack:
                 if (j.tiles == C.tiles).all():
                     already = 1
@@ -78,6 +85,8 @@ class Solver:
             C.tiles[x, y] = self.P.tiles[x, y - 1]
             C.tiles[x, y - 1] = 0
             C.compute_heuristics()
+
+            # checking if the newly generated node has a configuration that already exists
             for j in self.Stack:
                 if (j.tiles == C.tiles).all():
                     already = 1
@@ -87,9 +96,9 @@ class Solver:
                 self.F.append(C)
         already = 0
 
+    #successor function that chooses which node will be expanded next
     def successor(self):
         # BFS explores the first states, the one located at the beginning of the frontier
-        # print(P.id)
         #self.P = self.F[0]  # new state P, exploring a new child from the fringe, the first one
         #self.F = self.F[1:]  # updating the fringe, removing the explored child node
         #self.Stack.append(self.P)  # appending
@@ -105,7 +114,6 @@ class Solver:
 
     def solve_puzzle(self):
          # first visited state
-         #self.P = Node(initial_state)
          self.Stack.append(self.P)
 
 
@@ -116,6 +124,7 @@ class Solver:
             self.successor()
 
          print("A solution has been found")
+
          # recall the optimal path
          # restart from the final state (goal)
 
