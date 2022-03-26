@@ -11,8 +11,8 @@ class Node(object):
         self.parent = parent #parent-node
         self.id = next(Node.id_iter) #id of the node
         self.heuristics = 0 #heuristics associated to a certain node
-        #depth
-        #path-cost
+
+
 
     def compute_heuristics(self, goal_state = np.array( [[1,2,3],[4,5,6],[7,8,0]])): #Manhattan distance used to compute the heuristic
         for i in range(1, 9):
