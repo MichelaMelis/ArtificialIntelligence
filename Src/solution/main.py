@@ -6,8 +6,7 @@ from solution.Solver import Solver
 
 initial_state = np.array([[1, 2, 3], [4, 5, 6], [7, 0, 8]])
 
-#dovrebbe chiamare (importando dei package separati), delle funzioni che:
-#-dicano se il gioco è risolvibile
+
 
 # check if a given instance of 8 puzzle is solvable or not
 
