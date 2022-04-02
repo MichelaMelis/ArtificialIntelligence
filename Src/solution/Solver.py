@@ -3,9 +3,10 @@ import numpy as np
 
 class Solver:
 
-    def __init__(self,initial_state):
+    def __init__(self,initial_state, strategy):
         self.initial_state = initial_state
         self.goal_state = np.array([[1,2,3],[4,5,6],[7,8,0]])
+        self.strategy = strategy
         self.P = Node(initial_state) #parent node
         self.F = []        #fringe for the nodes that wait to be expanded
         self.Stack = []    #stack where all expanded nodes will be saved
@@ -13,11 +14,12 @@ class Solver:
         self.cost = 0      #cost of the solution
 
 
+
     #auxiliary function to select which node to expand next in A*
     def select(self):
         min = self.F[0]
         for j in self.F:
-            if j.heuristic <= min.heuristic:
+            if j.heuristics <= min.heuristics:
                 min = j
         self.F.remove(min)
         self.P = min
@@ -52,7 +54,6 @@ class Solver:
             C.tiles[x + 1, y] = 0
             C.compute_heuristics()
 
-            #checking if the newly generated node has a configuration that already exists
             for j in self.Stack:
                 if (j.tiles == C.tiles).all():
                     already = 1
@@ -69,6 +70,7 @@ class Solver:
             C.compute_heuristics()
 
             # checking if the newly generated node has a configuration that already exists
+
             for j in self.Stack:
                 if (j.tiles == C.tiles).all():
                     already = 1
@@ -98,25 +100,30 @@ class Solver:
 
     #successor function that chooses which node will be expanded next
     def successor(self):
+
         # BFS explores the first states, the one located at the beginning of the frontier
-        #self.P = self.F[0]  # new state P, exploring a new child from the fringe, the first one
-        #self.F = self.F[1:]  # updating the fringe, removing the explored child node
-        #self.Stack.append(self.P)  # appending
+        if self.strategy == "BFS":
+
+           self.P = self.F[0]  # new state P, exploring a new child from the fringe, the first one
+           self.F = self.F[1:]  # updating the fringe, removing the explored child node
+           self.Stack.append(self.P)  # appending
 
         # DFS explores the last state of the fringe, the one located at the end of the frontier
-         self.P = self.F[-1] #new state P, exploring a new child from the fringe, the last one
-         self.F = self.F[:-1] #updating the fringe, removing the explored child node
-         self.Stack.append(self.P) #appending
+        elif self.strategy == "DFS":
+
+          self.P = self.F[-1] #new state P, exploring a new child from the fringe, the last one
+          self.F = self.F[:-1] #updating the fringe, removing the explored child node
+          self.Stack.append(self.P) #appending
 
         # A* selects the node in the fringe characterised by the lowest value of the heuristics function associated to each node
-        #self.P = self.select()
-        #self.Stack.append(self.P)
+        elif self.strategy == "A*" :
+
+          self.P = self.select()
+          self.Stack.append(self.P)
 
     def solve_puzzle(self):
          # first visited state
          self.Stack.append(self.P)
-
-
          while not (self.goal_state == self.P.tiles).all():
             # finding the position of the empty space
             x, y = np.where(self.P.tiles == 0) # riga, colonna
