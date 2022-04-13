@@ -1,5 +1,6 @@
 import itertools
 import numpy as np
+import copy
 
 
 class Node(object):
@@ -11,6 +12,15 @@ class Node(object):
         self.parent = parent #parent-node
         self.id = next(Node.id_iter) #id of the node
         self.heuristics = 0 #heuristics associated to a certain node
+        self.depth = 0
+        self.eval = 0
+
+    #def compute_depth(self,Stack, P):
+        #while not (P.id == 0):
+          #for x in Stack:
+              #if x.id == P.parent:
+                 #P = x
+                 #self.depth += 1
 
 
 
@@ -19,3 +29,21 @@ class Node(object):
             x, y = np.where(self.tiles == i)
             x1, y1 = np.where(goal_state == i)
             self.heuristics += (abs(x1 - x) + abs(y1 - y))
+
+
+    def compute_eval(self):
+        self.eval = self.depth + self.heuristics
+
+
+
+    def get_tiles(self, id):
+        if self.id == id:
+            return self.tiles
+        else:
+            return None
+
+    def get_parent_id(self, id):
+        if self.id == id:
+            return self.parent
+        else:
+            return None

@@ -1,5 +1,6 @@
 from Node.Node import Node
 import numpy as np
+import copy
 
 class Solver:
 
@@ -19,11 +20,22 @@ class Solver:
     def select(self):
         min = self.F[0]
         for j in self.F:
-            if j.heuristics <= min.heuristics:
-                min = j
+            if j.eval < min.eval:
+                    min = j
         self.F.remove(min)
         self.P = min
-        return self.P
+
+
+    def is_already(self, C):
+        D = copy.deepcopy(self.P)
+        while not (D.id == 0):
+            for x in self.Stack:
+                if x.id == D.parent:
+                    tiles = x.get_tiles(x.id)
+                    if (tiles == C.tiles).all():
+                        return True
+                    D = x
+        return False
 
     #generating new possible states
     def move(self, x ,y ):
@@ -35,15 +47,22 @@ class Solver:
             C = Node(np.copy(self.P.tiles), np.copy(self.P.id))  # 0
             C.tiles[x, y] = self.P.tiles[x - 1, y]  # moving the tile
             C.tiles[x - 1, y] = 0  # empty space in
-            C.compute_heuristics()
-            # checking if the newly generated node has a configuration that already exists
-            for j in self.Stack:
-                if (j.tiles == C.tiles).all():
-                    already = 1
-                    break
+            if self.strategy == "A*":
+               #C.compute_depth(self.Stack, self.P)
+               C.depth += self.P.depth + 1
+               C.compute_heuristics()
+               C.compute_eval()
 
-            if already == 0:
-                self.F.append(C)  # adding a new child to the fringe only if has not the same configuration
+            if not self.is_already(C):
+                self.F.append(C)
+            # checking if the newly generated node has a configuration that already exists
+            #for j in self.Stack:
+             #   if (j.tiles == C.tiles).all():
+              #      already = 1
+               #     break
+
+            #if already == 0:
+               # self.F.append(C)  # adding a new child to the fringe only if has not the same configuration
 
         already = 0
 
@@ -52,32 +71,49 @@ class Solver:
             C = Node(np.copy(self.P.tiles), self.P.id)
             C.tiles[x, y] = self.P.tiles[x + 1, y]
             C.tiles[x + 1, y] = 0
-            C.compute_heuristics()
+            if self.strategy == "A*":
+                C.depth += self.P.depth + 1
 
-            for j in self.Stack:
-                if (j.tiles == C.tiles).all():
-                    already = 1
-                    break
-            if already == 0:
+               #C.compute_depth(self.Stack, self.P)
+
+                C.compute_heuristics()
+                C.compute_eval()
+
+            if not self.is_already(C):
                 self.F.append(C)
-        already = 0
+
+        #    for j in self.Stack:
+         #       if (j.tiles == C.tiles).all():
+          #          already = 1
+           #         break
+            #if already == 0:
+             #   self.F.append(C)
+        #already = 0
 
         # move a tile on the left
         if y < 2:
             C = Node(np.copy(self.P.tiles), self.P.id)
             C.tiles[x, y] = self.P.tiles[x, y + 1]
             C.tiles[x, y + 1] = 0
-            C.compute_heuristics()
+            if self.strategy == "A*":
+                C.depth += self.P.depth + 1
+
+              #C.compute_depth(self.Stack, self.P)
+                C.compute_heuristics()
+                C.compute_eval()
+
+            if not self.is_already(C):
+                self.F.append(C)
 
             # checking if the newly generated node has a configuration that already exists
 
-            for j in self.Stack:
-                if (j.tiles == C.tiles).all():
-                    already = 1
-                    break
-            if already == 0:
-                self.F.append(C)
-        already = 0
+            #for j in self.Stack:
+             #   if (j.tiles == C.tiles).all():
+              #      already = 1
+               #     break
+            #if already == 0:
+             #   self.F.append(C)
+        #already = 0
 
         # move a tile on the right
         if y > 0:
@@ -86,17 +122,25 @@ class Solver:
             # print(C.parent)
             C.tiles[x, y] = self.P.tiles[x, y - 1]
             C.tiles[x, y - 1] = 0
-            C.compute_heuristics()
+            if self.strategy == "A*":
+                C.depth += self.P.depth + 1
+              #C.compute_depth(self.Stack, self.P)
+                C.compute_heuristics()
+                C.compute_eval()
+
+            if not self.is_already(C):
+                self.F.append(C)
+
 
             # checking if the newly generated node has a configuration that already exists
-            for j in self.Stack:
-                if (j.tiles == C.tiles).all():
-                    already = 1
-                    break
+            #for j in self.Stack:
+             #   if (j.tiles == C.tiles).all():
+              #      already = 1
+               #     break
 
-            if already == 0:
-                self.F.append(C)
-        already = 0
+            #if already == 0:
+             #   self.F.append(C)
+        #already = 0
 
     #successor function that chooses which node will be expanded next
     def successor(self):
@@ -118,8 +162,8 @@ class Solver:
         # A* selects the node in the fringe characterised by the lowest value of the heuristics function associated to each node
         elif self.strategy == "A*" :
 
-          self.P = self.select()
-          self.Stack.append(self.P)
+          self.select() #new state P
+          self.Stack.append(self.P) #appending to the stack
 
     def solve_puzzle(self):
          # first visited state
@@ -139,7 +183,8 @@ class Solver:
 
          # looping to find the parent of the state, until the parent state becomes equal to the initial state
 
-         while not (self.initial_state == self.P.tiles).all():
+         while not (self.P.id == 0):
+         #while not (self.initial_state == self.P.tiles).all():
             for x in self.Stack:
                if x.id == self.P.parent:
                   self.P = x
@@ -153,6 +198,6 @@ class Solver:
          [print(x.id) for x in self.Path]
 
          print("Cost of the solution: ", self.cost)
-         print("Number of nodes expanded:" ,len(self.Path))
-
-
+         print("Number of nodes expanded:" ,len(self.Stack))
+         #for x in self.Path:
+             #print(x.heuristics)

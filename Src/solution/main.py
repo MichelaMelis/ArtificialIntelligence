@@ -4,10 +4,10 @@ import numpy as np
 from solution.Solver import Solver
 
 
-initial_state = np.array([[1, 2, 3], [4, 5, 6], [7, 0, 8]])
-strategy = "BFS"
+initial_state = np.array([[4,1,2], [0,8,7],  [6,3,5]] )
+#strategy = "BFS"
 #strategy = "DFS"
-#strategy = "A*"
+strategy = "A*"
 
 
 # check if a given instance of 8 puzzle is solvable or not
@@ -40,7 +40,13 @@ else:
 
 Solution = Solver(initial_state,strategy)
 Solution.solve_puzzle()
+print(strategy)
+
+
 
 #-creino istanze della classe nodo
 #-a seconda dell'algoritmo scelto risolvano il gioco
 #-stampino le informazioni legate alla soluzione
+
+
+
