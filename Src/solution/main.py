@@ -1,5 +1,3 @@
-#questo file dovrebbe prendere in ingresso la configurazione di gioco
-#che si intende esplorare
 import numpy as np
 from solution.Solver import Solver
 
@@ -41,12 +39,5 @@ else:
 Solution = Solver(initial_state,strategy)
 Solution.solve_puzzle()
 print(strategy)
-
-
-
-#-creino istanze della classe nodo
-#-a seconda dell'algoritmo scelto risolvano il gioco
-#-stampino le informazioni legate alla soluzione
-
 
 

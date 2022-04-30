@@ -42,29 +42,20 @@ class Solver:
 
         # EXPAND THE PARENT STATE P, considering all possible moves
         # move a tile down only if the empty space is not in the first row, only on row 1 or 2
-        already = 0
         if x > 0:
             C = Node(np.copy(self.P.tiles), np.copy(self.P.id))  # 0
             C.tiles[x, y] = self.P.tiles[x - 1, y]  # moving the tile
             C.tiles[x - 1, y] = 0  # empty space in
             if self.strategy == "A*":
-               #C.compute_depth(self.Stack, self.P)
                C.depth += self.P.depth + 1
                C.compute_heuristics()
                C.compute_eval()
 
+            # checking if the newly generated node has a configuration that already exists
             if not self.is_already(C):
                 self.F.append(C)
-            # checking if the newly generated node has a configuration that already exists
-            #for j in self.Stack:
-             #   if (j.tiles == C.tiles).all():
-              #      already = 1
-               #     break
 
-            #if already == 0:
-               # self.F.append(C)  # adding a new child to the fringe only if has not the same configuration
 
-        already = 0
 
         # move a tile up only if the empty space is not in the 3rd (last) row, only on row 0 or 1
         if x < 2:
@@ -74,21 +65,13 @@ class Solver:
             if self.strategy == "A*":
                 C.depth += self.P.depth + 1
 
-               #C.compute_depth(self.Stack, self.P)
-
                 C.compute_heuristics()
                 C.compute_eval()
 
             if not self.is_already(C):
                 self.F.append(C)
 
-        #    for j in self.Stack:
-         #       if (j.tiles == C.tiles).all():
-          #          already = 1
-           #         break
-            #if already == 0:
-             #   self.F.append(C)
-        #already = 0
+
 
         # move a tile on the left
         if y < 2:
@@ -98,7 +81,7 @@ class Solver:
             if self.strategy == "A*":
                 C.depth += self.P.depth + 1
 
-              #C.compute_depth(self.Stack, self.P)
+
                 C.compute_heuristics()
                 C.compute_eval()
 
@@ -107,24 +90,16 @@ class Solver:
 
             # checking if the newly generated node has a configuration that already exists
 
-            #for j in self.Stack:
-             #   if (j.tiles == C.tiles).all():
-              #      already = 1
-               #     break
-            #if already == 0:
-             #   self.F.append(C)
-        #already = 0
 
         # move a tile on the right
         if y > 0:
             C = Node(np.copy(self.P.tiles), self.P.id)
-            # print(C.id)
-            # print(C.parent)
+
             C.tiles[x, y] = self.P.tiles[x, y - 1]
             C.tiles[x, y - 1] = 0
             if self.strategy == "A*":
                 C.depth += self.P.depth + 1
-              #C.compute_depth(self.Stack, self.P)
+
                 C.compute_heuristics()
                 C.compute_eval()
 
@@ -132,15 +107,7 @@ class Solver:
                 self.F.append(C)
 
 
-            # checking if the newly generated node has a configuration that already exists
-            #for j in self.Stack:
-             #   if (j.tiles == C.tiles).all():
-              #      already = 1
-               #     break
 
-            #if already == 0:
-             #   self.F.append(C)
-        #already = 0
 
     #successor function that chooses which node will be expanded next
     def successor(self):
@@ -184,7 +151,6 @@ class Solver:
          # looping to find the parent of the state, until the parent state becomes equal to the initial state
 
          while not (self.P.id == 0):
-         #while not (self.initial_state == self.P.tiles).all():
             for x in self.Stack:
                if x.id == self.P.parent:
                   self.P = x

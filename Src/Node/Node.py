@@ -15,14 +15,6 @@ class Node(object):
         self.depth = 0
         self.eval = 0
 
-    #def compute_depth(self,Stack, P):
-        #while not (P.id == 0):
-          #for x in Stack:
-              #if x.id == P.parent:
-                 #P = x
-                 #self.depth += 1
-
-
 
     def compute_heuristics(self, goal_state = np.array( [[1,2,3],[4,5,6],[7,8,0]])): #Manhattan distance used to compute the heuristic
         for i in range(1, 9):
